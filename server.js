@@ -132,7 +132,28 @@ app.post('/resources/:id/reservations', (req, res) => {
         reserver_name: reserver_name,
         quantity: quantity
     });
+});
 
+//Fourth endpoint 
+app.get('/resources/:id/reservations', (req, res) => {
 
+    const id = Number(req.params.id);
+
+ if (!Number.isInteger(id)) {
+        res.status(400).json({ error: "invalid id" });
+        return;
+    }
+
+    // check resource exists
+    const resource = db.prepare('SELECT * FROM resources WHERE id = ?').get(id);
+    if (!resource) {
+        res.status(404).json({ error: "resource not found" });
+        return;
+    }
+
+    // get all reservations for this resource
+    const reservations = db.prepare('SELECT * FROM reservations WHERE resource_id = ?').all(id);
+    res.json(reservations);
+    
 });
 
