@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "test": "node test.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "َQassim Aljaffer",
   "license": "ISC",
-  "description": "",
+  "description": "REST API for managing reservations on limited-capacity resources, built with Node.js, Express, and SQLite.",
   "dependencies": {
     "better-sqlite3": "^12.10.0",
     "express": "^5.2.1"

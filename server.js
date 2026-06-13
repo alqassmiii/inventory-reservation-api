@@ -15,21 +15,25 @@ app.get('/', (req, res) => {
 //First endpoint
 app.post('/resources', (req, res) => {
 
+    if (!req.body || typeof req.body !== 'object') {
+        return res.status(400).json({ error: 'request body must be JSON' });
+    }
+
     const name = req.body.name;
     const total_capacity = req.body.total_capacity;
 
 
-    // check if the name is valid 
-    if (typeof name !== 'string' || name.trim() === '') { 
-        res.status(400).json({error: "the name must be String"});
+    // check if the name is valid
+    if (typeof name !== 'string' || name.trim() === '') {
+        res.status(400).json({error: "Name must be a non-empty string"});
 
         return;
     }
     
-    // check if the total_capacity is valid 
+    // check if the total_capacity is valid
     if (!Number.isInteger(total_capacity) || total_capacity <= 0) {
 
-    res.status(400).json({error: "the total capacity must be integer positive number"});
+    res.status(400).json({error: "total_capacity must be a positive integer"});
 
         return;  
     }
@@ -55,8 +59,8 @@ app.post('/resources', (req, res) => {
 app.get('/resources/:id', (req, res) => {
     const id = Number(req.params.id);
 
-        //check if the id is in database 
-         if (!Number.isInteger(id)) {
+        //check if the id is in database
+         if (!Number.isInteger(id) || id <= 0) {
         res.status(400).json({ error: "invalid id" });
         return;
         }
@@ -82,15 +86,18 @@ app.get('/resources/:id', (req, res) => {
     });
 });
 
-//Thered endpoint 
+//Thered endpoint
 app.post('/resources/:id/reservations', (req, res) => {
+
+    if (!req.body || typeof req.body !== 'object') {
+        return res.status(400).json({ error: 'request body must be JSON' });
+    }
 
     const id = Number(req.params.id);
     const reserver_name = req.body.reserver_name;
     const quantity = req.body.quantity;
 
-    
-    if (!Number.isInteger(id)) {
+    if (!Number.isInteger(id) || id <= 0) {
         res.status(400).json({ error: "invalid id" });
         return;
     }
@@ -119,7 +126,7 @@ app.post('/resources/:id/reservations', (req, res) => {
 
     // check there is enough seats
     if (quantity > available) {
-        res.status(400).json({ error: "there is no available seats for this resource" });
+        res.status(400).json({ error: "requested quantity exceeds available capacity" });
         return;
     }
 
@@ -139,12 +146,12 @@ app.post('/resources/:id/reservations', (req, res) => {
     });
 });
 
-//Fourth endpoint 
+//Fourth endpoint
 app.get('/resources/:id/reservations', (req, res) => {
 
     const id = Number(req.params.id);
 
- if (!Number.isInteger(id)) {
+    if (!Number.isInteger(id) || id <= 0) {
         res.status(400).json({ error: "invalid id" });
         return;
     }

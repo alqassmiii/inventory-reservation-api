@@ -2,6 +2,7 @@ const Database = require('better-sqlite3');
 
 const db = new Database('data.db');
 
+db.pragma('foreign_keys = ON');
 
 db.exec(`CREATE TABLE IF NOT EXISTS resources (
 
