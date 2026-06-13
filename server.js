@@ -5,10 +5,11 @@ const db = require('./Database');
 const app = express();
 app.use(express.json());
 
-const port = 3000;
-app.listen(port, () => console.log(`Server running on port ${port}`));
 
-
+// Health check endpoint
+app.get('/', (req, res) => {
+    res.json({ status: 'ok', message: 'Inventory Reservation API is running' });
+});
 
 
 //First endpoint
@@ -126,11 +127,15 @@ app.post('/resources/:id/reservations', (req, res) => {
     const insert = db.prepare('INSERT INTO reservations (resource_id, reserver_name, quantity) VALUES (?, ?, ?)');
     const result = insert.run(id, reserver_name, quantity);
 
+    // include created_at in response
+    const reservation = db.prepare('SELECT * FROM reservations WHERE id = ?').get(result.lastInsertRowid);
+
     res.status(201).json({
-        id: result.lastInsertRowid,
-        resource_id: id,
-        reserver_name: reserver_name,
-        quantity: quantity
+        id: reservation.id,
+        resource_id: reservation.resource_id,
+        reserver_name: reservation.reserver_name,
+        quantity: reservation.quantity,
+        created_at: reservation.created_at
     });
 });
 
@@ -157,3 +162,11 @@ app.get('/resources/:id/reservations', (req, res) => {
     
 });
 
+// global error handler
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ error: 'something went wrong' });
+});
+
+const port = 3000;
+app.listen(port, () => console.log(`Server running on port ${port}`));
